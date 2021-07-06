@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from smart4l.utils.RunnableObjectInterface import RunnableObjectInterface
+
 class Sensor(RunnableObjectInterface):
   def __init__(self, sensor_object, name, on_measure):
     self.sensor_object = sensor_object
