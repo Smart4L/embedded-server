@@ -48,6 +48,54 @@ sudo apt install -y git-all python3
 ```
 
 ---
+## SIM7600X G-H 4G GPS HAT
+
+### 1. SIM7600X G-H Presentation
+
+J'ai acheté le modèle 4G LTE version globale (SIM7600G). Fonctionne bien sur un Raspberry Pi 3B+ mais la documentation officielle est un peu trop superficielle. La carte demande de la configuration sur l'OS (driver qmicli + wan interface) pour configurer notamment la réception 4G.
+Je n'ai pas encore testé le GPS.
+Nécessite des connaissances de base sur la liaison série UART et les commandes Hayes.
+Je déconseille aux débutants.
+
+### 2. Connect & Plug SIM7600X 
+
+```bash
+cd /home/pi/SIM7000X-4G-HAT-Demo/Raspberry/c
+sudo ./sim7600_4G_hat_init
+
+ls /dev/ttyUSB*
+
+sudo minicom -D /dev/ttyUSB2
+AT+CPSI?
+AT+CUSBPIDSWITCH=9011,1,1
+AT+CPSI?
+
+ifconfig # locate usb0 interface or alternative
+sudo dhclient -v usb0
+sudo dhclient -v wwan0
+
+
+# ah voilà il faut configurer l'APN
+AT
+AT+SETAPN=“providerapn”
+AT+SETUSER=“provideruser”
+AT+SETPWD=“providerpassword”
+AT+SAVE
+
+```
+
+
+
+### 3. Configure
+
+### 4. Get Data
+
+---
+## ICQUANZX GY-NEO6MV2 NEO-6M Module contrôleur de vol GPS 
+
+
+
+---
 ## DS18B20 Temperature Sensor Sonde
 
 ### 1. DS18B20 Presentation 
