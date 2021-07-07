@@ -1,3 +1,9 @@
+# SQLBrowser tools
+/tools/WIN64_DB-Browser-for-SQLite/
+/tools/DB Browser for SQLite/
+/tools/DB.Browser.for.SQLite-3.12.2-win64/
+smart4l.db
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

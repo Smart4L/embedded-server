@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import os
 import signal
 import sys
 
@@ -13,7 +14,7 @@ def main():
   logging.basicConfig(level=logging.DEBUG, datefmt='%d-%m-%Y %H:%M:%S') # Set logger
   signal.signal(signal.SIGTERM, stop) # execute stop function when SIGTERM received
   global app
-  app = Smart4L()
+  app = Smart4L(database_file_path=os.path.dirname(__file__))
 
   try:    
     start()

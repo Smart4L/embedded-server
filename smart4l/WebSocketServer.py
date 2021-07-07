@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import asyncio
 import logging
+logger = logging.getLogger("WebSocketServer")
+
 import websockets
 from websockets import WebSocketServerProtocol
 
@@ -10,13 +12,13 @@ class WebSocketServer():
   # add client to clients list
   async def register(self, ws: WebSocketServerProtocol) -> None:
     self.clients.add(ws)
-    logging.info(f"WebSocket client from {ws.remote_address} connects.")
+    logger.info(f"WebSocket client from {ws.remote_address} connects.")
 
   # remove client from clients list
   async def unregister(self, ws: WebSocketServerProtocol) -> None:
     await ws.close(1000,"Normal Closure")
     self.clients.remove(ws)
-    logging.info(f"WebSocket client from {ws.remote_address} disconnects.")
+    logger.info(f"WebSocket client from {ws.remote_address} disconnects.")
 
   # send message to one client
   async def send_to_client(self, ws: WebSocketServerProtocol, message: str) -> None:
@@ -26,7 +28,7 @@ class WebSocketServer():
   async def send_to_clients(self, message: str) -> None:
     if self.clients:
       await asyncio.wait([client.send(message) for client in self.clients])
-      logging.info(f'WebSocket Sent to clients {",".join([f"{client.remote_address[0]}:{client.remote_address[1]}" for client in self.clients])}, message: {message}')
+      logger.info(f'WebSocket Sent to clients {",".join([f"{client.remote_address[0]}:{client.remote_address[1]}" for client in self.clients])}, message: {message}')
 
   # Handle client connection
   async def ws_handler(self, ws: WebSocketServerProtocol, uri: str) -> None:
@@ -48,5 +50,5 @@ class WebSocketServer():
 
   # Close connection for all client in clients list 
   async def close_all_connections(self):
-    logging.info(f'WebSocket close all connections')
+    logger.info(f'WebSocket close all connections')
     await asyncio.wait([self.unregister(client) for client in self.clients])

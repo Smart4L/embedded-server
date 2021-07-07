@@ -10,6 +10,11 @@
 
 ```
 
+## Browse Database
 
+```bash
+sudo apt install -y sqlitebrowser # Install tools
+sqlitebrowser
+```
 
 
