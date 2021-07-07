@@ -75,6 +75,8 @@ sudo dhclient -v usb0
 sudo dhclient -v wwan0
 
 
+
+
 # ah voilà il faut configurer l'APN
 AT
 AT+SETAPN=“providerapn”
@@ -82,13 +84,58 @@ AT+SETUSER=“provideruser”
 AT+SETPWD=“providerpassword”
 AT+SAVE
 
+
+
+# https://www.waveshare.com/wiki/Raspberry_Pi_networked_via_RNDIS
+# Connect GPS position
+AT+CGPS=1
+# Now open the NEMA port, you can get GPS data:
+# Turn off GPS
+AT+CGPS=0
+
+ifconfig -a # Looking for WWAN0 interface
+
+sudo apt-get install -y minicom # Testing AT command 
+sudo minicom -D /dev/ttyUSB2
+ifconfig wwan0 # Check connection and get public ip
+
+pip3 install speedtest_cli
+speedtest # or use speedtest_cli
+
+
+
+# 
+# script : https://www.waveshare.com/wiki/SIM7600G-H_4G_for_Jetson_Nano
+
+
+#
+# https://www.waveshare.com/wiki/SIM7600G-H_4G_DONGLE
+
+
+
+
+
 ```
+
 
 
 
 ### 3. Configure
 
 ### 4. Get Data
+
+### Doc
+
+Forum command list : https://techship.com/faq/basic-gnss-gps-usage-guide-for-simcom-sim7100-sim7500-sim7600-series-cellular-modules/
+
+Wiki : https://www.waveshare.com/wiki/SIM7600G-H_4G_for_Jetson_Nano
+
+https://www.waveshare.com/wiki/SIM800C_GSM/GPRS_HAT
+https://www.waveshare.com/wiki/SIM7600E-H_4G_HAT
+https://www.waveshare.com/wiki/SIM7600G-H_4G_HAT_(B)
+
+
+
 
 ---
 ## ICQUANZX GY-NEO6MV2 NEO-6M Module contrôleur de vol GPS 
@@ -250,6 +297,16 @@ except KeyboardInterrupt:
 sudo apt install -y sysbench
 sysbench --num-threads=8 --test=cpu --cpu-max-prime=2000 run
 ```
+
+# Camera
+
+doc IR mode : https://www.waveshare.com/wiki/RPi_IR-CUT_Camera_(B)
+```bash
+sudo nano /boot/config.txt
+disable_camera_led=1
+# Or GPIO port on camera : GPIO logic level. (HIGH --> Normal Mode, LOW --> Night-vision Mode)
+```
+
 
 # GPS
 
