@@ -7,20 +7,21 @@ from flask import Flask, jsonify, request, render_template
 from smart4l.utils.RunnableObjectInterface import RunnableObjectInterface
 
 class HTTPServer(RunnableObjectInterface):
-  def __init__(self, host, port, services=None, measures=None) -> None:
+  def __init__(self, host, port, services=None, measures=None, persistence=None) -> None:
     self.app = Flask(__name__)
     self.conf = {"host": host, "port": port}
     self.services = services
     self.measures = measures
+    self.persistence = persistence
     self.router()
 
   def router(self):
     self.app.add_url_rule('/', 'index', self.index)
     self.app.add_url_rule('/service', 'service', self.service)
     self.app.add_url_rule('/measure', 'measure', self.measure)
-    #self.app.add_url_rule('/history', 'history', self.history)
-    #self.app.add_url_rule('/log', 'log', self.log)
+    self.app.add_url_rule('/history', 'history', self.history)
     self.app.add_url_rule('/shutdown', 'shutdown', self.shutdown)
+    #self.app.add_url_rule('/log', 'log', self.log)
 
 
   # Abstract method of RunnableObjectInterface
@@ -42,6 +43,9 @@ class HTTPServer(RunnableObjectInterface):
 
   def service(self):
     return jsonify([{"name":key,"service": value.serialize()} for key,value in self.services.items()]) # return {"HTTP":{"status":"RUNNING", "runnable_object": "HttpServer"},"WEBSocket":{"status":"STOPPED", "runnable_object": "WebSocketServerController"}} 
+
+  def history(self):
+    return jsonify(self.persistence.history(request.args.get('limit'),request.args.get('offset')))
 
   def measure(self):
     return jsonify([{"name":key,"measure": value} for key,value in self.measures.items()])

@@ -20,7 +20,9 @@ class Persistence(RunnableObjectInterface):
     db.close()
 
   def do(self):
-    # TODO DB registration
+    # If data is empty don't insert in database
+    if len(self.measures)==0:
+      return
     db = sqlite3.connect(self.database_file_path)
     cursor = db.cursor()
     [cursor.execute('insert into smart4l(id, date, unit, value) values(?,?,?,?)', [sensor_id, measure['date'], measure['unit'], json.dumps(measure['value'])] ) for sensor_id, measure in self.measures.items()]
@@ -29,23 +31,23 @@ class Persistence(RunnableObjectInterface):
     db.close()
     logger.info(f"DB:insert {len(self.measures)} rows")
 
-  def history(self):
-    db = sqlite3.connect('smart4l.db')
+  def history(self, limit=None, offset=None) -> dict:
+    db = sqlite3.connect(self.database_file_path)
     cursor = db.cursor()
-    cursor.execute('select date, data from smart4l')
+    cursor.execute(f'select id, date, unit, value from smart4l order by date DESC {f"limit {limit}" if limit is not None else ""} {f"offset {offset}" if offset is not None else ""}')
     row = cursor.fetchone()
     res = []
     while row != None:
-      res.append({"date": row[0], "data": json.loads(row[1])})
+      res.append({"id": row[0], "date": row[1], "unit": row[2], "value": json.loads(row[3]) if type(row[3]) == str else row[3]})
       row = cursor.fetchone()
     cursor.close()
     db.commit()
     db.close()
-        
     return res
 
   def stop(self):
     pass
+
   def __str__(self):
     return f'Persistence: database location {self.database_file_path}'
 

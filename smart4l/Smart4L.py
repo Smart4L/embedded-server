@@ -16,9 +16,9 @@ class Smart4L():
     self.services = {}
     self.last_measure = {}
 
-    self.http_server = HTTPServer(host="0.0.0.0", port=8080, services=self.services, measures=self.last_measure)
-    self.ws_server = WebSocketServerController(asyncio.get_event_loop(), host="0.0.0.0", port=8082)
     self.persistence = Persistence(database_file_path=database_file_path, measures=self.last_measure)
+    self.http_server = HTTPServer(host="0.0.0.0", port=8080, services=self.services, measures=self.last_measure, persistence=self.persistence)
+    self.ws_server = WebSocketServerController(asyncio.get_event_loop(), host="0.0.0.0", port=8082, measures=self.last_measure)
     
     self.add_service("DB", Service(self.persistence, delay=20))
     self.add_service("HTTP", Service(self.http_server))

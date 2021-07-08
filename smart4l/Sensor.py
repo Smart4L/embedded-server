@@ -13,7 +13,7 @@ class Sensor(RunnableObjectInterface):
 
   def do(self):
     measure = self.sensor_object.measure()
-    self.on_measure(MeasureValue(id=self.name, date=str(time.time()), value=measure['value'], unit=measure['unit']))
+    self.on_measure(MeasureValue(id=self.name, date=str(time.ctime()), value=measure['value'], unit=measure['unit']))
 
   def stop(self):
     self.sensor_object.stop()

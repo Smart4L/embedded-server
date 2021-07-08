@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 import asyncio
+import json
 import logging
 logger = logging.getLogger("WebSocketServer")
-
 import websockets
 from websockets import WebSocketServerProtocol
 
 class WebSocketServer():
   clients = set()
     
+  def __init__(self, measures):
+    self.measures = measures
+
   # add client to clients list
   async def register(self, ws: WebSocketServerProtocol) -> None:
     self.clients.add(ws)
@@ -34,9 +37,8 @@ class WebSocketServer():
   async def ws_handler(self, ws: WebSocketServerProtocol, uri: str) -> None:
     await self.register(ws)
     try:
-      # Start communication
-      # TODO:Flush messages to the new client
-      # await asyncio.wait([ self.send_to_client(ws, json.dumps( {"type": "UPDATE_SENSOR", "content": {"id": k,"value": v}})) for k,v in store_smart4l.last_measure.items()])
+      # Flush current measures to the new client
+      await asyncio.wait([ self.send_to_client(ws, json.dumps({"id":id, **data})) for id,data in self.measures.items()])
       await self.distribute(ws)
     finally:
       # Remove client from clients list
