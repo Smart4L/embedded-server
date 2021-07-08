@@ -40,15 +40,20 @@ class WebSocketServer():
       # Flush current measures to the new client
       await asyncio.wait([ self.send_to_client(ws, json.dumps({"id":id, **data})) for id,data in self.measures.items()])
       await self.distribute(ws)
+    except:
+      pass
     finally:
       # Remove client from clients list
       await self.unregister(ws)
 
   # Waiting for client messages, that keep connection alive
   async def distribute(self, ws: WebSocketServerProtocol) -> None:
-    async for message in ws:
-      pass
+    try:
+      async for message in ws:
+        pass
       # await self.send_to_clients(message)
+    except websockets.ConnectionClosed:
+      raise   
 
   # Close connection for all client in clients list 
   async def close_all_connections(self):
