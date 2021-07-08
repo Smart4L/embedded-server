@@ -8,9 +8,12 @@
 
 **Setup**
 ```bash
-
-
-
+python3 -m venv venv # Create virtualenv in venv directory
+source venv/bin/activate # activate virtualenv
+pip3 install requests flask websockets # install dependencies
+pip3 freeze > requirements.txt # create dependencies file
+deactivate # exit virtualenv
+pip3 install -r requirements.txt # install dependencies from file
 ```
 
 ## Browse Database
