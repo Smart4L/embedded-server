@@ -59,13 +59,83 @@ Je déconseille aux débutants.
 
 ### 2. Connect & Plug SIM7600X 
 
+
+https://eco-sensors.ch/router-wifi-4g-hotspot/
+
+
 ```bash
 cd /home/pi/SIM7000X-4G-HAT-Demo/Raspberry/c
 sudo ./sim7600_4G_hat_init
 
-ls /dev/ttyUSB*
 
+
+
+sudo apt install -y libqmi-utils udhcpc
+sudo qmicli -d /dev/cdc-wdm0 --dms-set-operating-mode='online'
+sudo qmicli -d /dev/cdc-wdm0 --dms-get-operating-mode # Get online status
+sudo qmicli -d /dev/cdc-wdm0 --nas-get-signal-strength # Get Signal  strength quality
+qmicli -d /dev/cdc-wdm0 --nas-get-home-network # Get Carrier name
+sudo ip link set wwan0 down
+echo 'Y' | sudo tee /sys/class/net/wwan0/qmi/raw_ip
+sudo ip link set wwan0 up
+sudo qmicli --device=/dev/cdc-wdm0 --device-open-proxy --wds-start-network="ip-type=4,apn=mmsfree" --client-no-release-cid
+sudo udhcpc -i wwan0
+
+
+
+
+
+ls /dev/ttyUSB*
 sudo minicom -D /dev/ttyUSB2
+AT+CGMI # Manufacturer identification
+AT+CGMM # Model identification  
+AT+CGMR # Revision identification 
+AT+CPIN=1234
+
+# - Send sms -
+AT+CMGF=1 # Enable SMS text mode
+AT+CMGF=? # Should output +CMGF: (0,1)
+AT+CSCA? # Display Server Center Adress
+# AT+CSCA="+33695000695" # DON'T Change it, default is valid or note default somewhere, not like me...
+AT+CMGS="+33695360970" # Send text message use CTRL+Z to valid message
+# - Phone call -
+AT+CGREG? # Should +CGREG: 0,1 The device return that is registred in the home network
+AT+COPS? # Verifying the network registration status
+AT+CSQ # Check sign quality
+ATD33650520266;
+AT+CHUP # Hang up current call or use ATH
+ATDL # Call the last dialled number
+
+
+
+AT+CREG?
+AT+COPS?
+
+
+
+
+AT+CGPS=1 # Enable  GPS ??
+AT+CGPSINFO
+
+AT+CGPSPWR=1 # Turn GPS on
+AT+CGPSSTATUS? # Get GPS Status
+AT+CGPSRST=0 # Reset the GPS in autonomy mode
+WAIT=15 # Wait for the GPS reset
+AT+CGPSINF=0 # Get the current GPS location
+
+
+
+AT+CGPS=1,1 # out : OK
+AT+CGPSINFO # out : +CGPSINFO
+AT+CGPS=0 # out : OK  Tuen off GPS
+
+# sudo ip link set wwan0 up
+# sudo udhcpc -i wwan0
+# ip a s wwan0
+
+
+
+
 AT+CPSI?
 AT+CUSBPIDSWITCH=9011,1,1
 AT+CPSI?
@@ -94,6 +164,8 @@ AT+SAVE
 ## ICQUANZX GY-NEO6MV2 NEO-6M Module contrôleur de vol GPS 
 
 
+---
+## SSH1106 GME12864 - 70 Ecran OLED I2C 128x64 Pixel
 
 ---
 ## DS18B20 Temperature Sensor Sonde
