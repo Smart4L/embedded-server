@@ -7,9 +7,9 @@ import websockets
 from smart4l.WebSocketServer import WebSocketServer
 
 class WebSocketServerController:
-  def __init__(self, loop: asyncio.AbstractEventLoop, host:str, port:int):
+  def __init__(self, loop: asyncio.AbstractEventLoop, host:str, port:int, measures: dict):
     self.loop = loop
-    self.ws_server = WebSocketServer()
+    self.ws_server = WebSocketServer(measures)
     self.conf = {"host": host, "port": port}
 
   def do(self,):

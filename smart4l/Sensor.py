@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import time
+
 from smart4l.utils.RunnableObjectInterface import RunnableObjectInterface
+from smart4l.utils.MeasureValue import MeasureValue
 
 class Sensor(RunnableObjectInterface):
   def __init__(self, sensor_object, name, on_measure):
@@ -9,10 +12,11 @@ class Sensor(RunnableObjectInterface):
     self.name = name
 
   def do(self):
-    self.on_measure(self.name, self.sensor_object.measure())        
+    measure = self.sensor_object.measure()
+    self.on_measure(MeasureValue(id=self.name, date=str(time.ctime()), value=measure['value'], unit=measure['unit']))
 
   def stop(self):
-    pass
+    self.sensor_object.stop()
 
   def __str__(self):
     return f"{str(self.sensor_object)} : {self.name}"
