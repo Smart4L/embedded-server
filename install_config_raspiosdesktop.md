@@ -64,6 +64,16 @@ https://eco-sensors.ch/router-wifi-4g-hotspot/
 
 
 ```bash
+
+
+
+sudo apt install -y gpsd gpsd-clients
+sudo systemctl stop gpsd.socket
+sudo systemctl disable gpsd.socket
+sudo gpsd /dev/ttyUSB2 -F /var/run/gpsd.sock # Manually start GPSD and connect to GPS on USB0
+cgps -s # Run GPSD Display
+
+
 cd /home/pi/SIM7000X-4G-HAT-Demo/Raspberry/c
 sudo ./sim7600_4G_hat_init
 
@@ -74,11 +84,12 @@ sudo apt install -y libqmi-utils udhcpc
 sudo qmicli -d /dev/cdc-wdm0 --dms-set-operating-mode='online'
 sudo qmicli -d /dev/cdc-wdm0 --dms-get-operating-mode # Get online status
 sudo qmicli -d /dev/cdc-wdm0 --nas-get-signal-strength # Get Signal  strength quality
-qmicli -d /dev/cdc-wdm0 --nas-get-home-network # Get Carrier name
+sudo qmicli -d /dev/cdc-wdm0 --nas-get-home-network # Get Carrier name
 sudo ip link set wwan0 down
 echo 'Y' | sudo tee /sys/class/net/wwan0/qmi/raw_ip
 sudo ip link set wwan0 up
-sudo qmicli --device=/dev/cdc-wdm0 --device-open-proxy --wds-start-network="ip-type=4,apn=mmsfree" --client-no-release-cid
+#sudo qmicli --device=/dev/cdc-wdm0 --device-open-proxy --wds-start-network="ip-type=4,apn=mmsfree" --client-no-release-cid
+sudo qmicli --device=/dev/cdc-wdm0 --device-open-proxy --wds-start-network="ip-type=4,apn=orange,username=orange,password=orange" --client-no-release-cid
 sudo udhcpc -i wwan0
 
 
@@ -90,13 +101,13 @@ sudo minicom -D /dev/ttyUSB2
 AT+CGMI # Manufacturer identification
 AT+CGMM # Model identification  
 AT+CGMR # Revision identification 
-AT+CPIN=1234
+AT+CPIN=1234 # Unlock sim card with pin code
 
 # - Send sms -
 AT+CMGF=1 # Enable SMS text mode
 AT+CMGF=? # Should output +CMGF: (0,1)
 AT+CSCA? # Display Server Center Adress
-# AT+CSCA="+33695000695" # DON'T Change it, default is valid or note default somewhere, not like me...
+# AT+CSCA="+33695000695" # DON'T Change it, default is valid or note default somewhere not like me...
 AT+CMGS="+33695360970" # Send text message use CTRL+Z to valid message
 # - Phone call -
 AT+CGREG? # Should +CGREG: 0,1 The device return that is registred in the home network
@@ -106,10 +117,6 @@ ATD33650520266;
 AT+CHUP # Hang up current call or use ATH
 ATDL # Call the last dialled number
 
-
-
-AT+CREG?
-AT+COPS?
 
 
 

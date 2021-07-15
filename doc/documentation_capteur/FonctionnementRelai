@@ -1,0 +1,51 @@
+themwaAujourd’hui à 21:57
+Bonjour, je réfléchie actuellement à un projet "d'ordinateur" embarqué pour vieille voiture. Je suis en formation développeur accès haut niveau et j'avoue avoir quelques lacunes en composant électroniques ou semi-conducteurs. Ainsi j'ai mal compris la différence entre un transistor, un relai et un optocoupleur.
+
+Le relai est contrôlé par un faible courant et permet de rediriger des courants de même ou de plus forte intensité, il existe alors deux circuits destins. Un faible (en quelque sort le master) et un potentiellement plus fort (le slave)
+
+Mais cette définition n'est elle pas aussi celle d'un optocoupleur ? (La différence réside dans le faite que l'optocoupleur ne redirige pas un courant mais "l'autorise" ? c'est pas clair, le relai permet de  rediriger un courant vers une autre parti du circuit (si la borne NO est branché à quelque chose) vers la borne NC, la ou l'optocoupleur fait office interrupteur (on/off) pour un circuit donné ?  ) 
+
+Pour le transistor, c'est assez différent puisque qu'il n'y a qu'un seul circuit mais certaines "zones" sont "désactivées" par l'utilisation du transistor. Le transistor ouvre un circuit avec une résistance nulle, ce qui prive le circuit annexe. J'avoue cependant ne jamais avoir réussi à inverser le sens d'un moteur à courant continue avec un pont en H "maison" (la encore quelques lacunes ^^)
+
+Je m'excuse d'avance des imprécisions de cette question, toute la problématique est de pouvoir contrôler le faisceau électrique de la voiture (en 12v) depuis les gpio d'un raspberry en 3.3v ou 5v.
+Poil de nez magique ( ˘ ³˘)Aujourd’hui à 22:38
+Relais (électromécanique)
+C'est bien ça. En fait le but d'un relais est de laisser passer ou non le courant dans un circuit puissant à partir de l'état d'un circuit moins puissant. En gros, c'est un interrupteur qui s'actionne électriquement et non mécaniquement. Pour le circuit moins puissant, il n'est tout de même pas négligeable car il faut tout de même faire bouger un électro-aimant dans la plupart des cas. En général c'est du 5, 12 ou 24V sous quelques centaines de mA, en fonction du gabari du relais. D'autres types de relais existent également et sont à base de transistors / thyristors (ils sont dits solid state car ils n'ont aucun élément qui bouge) mais ce n'est pas souvent à ça que l'on fait allusion lorsque l'on parle réellement de relais. Chaque type a des avantages / inconvéniants, je te laisse regarder wikipédia pour ces détails.
+
+Optocoupleur
+C'est exactement le même principe qu'un relais (au niveau électrique). Tu passes un faible courant dans une diode, elle émet de la lumière et un phototransistor perçoit le changement de l'autre côté et laisse ou non passer un courant. En général, c'est utilisé pour des courants plus modérés que les relais. Encore une fois, aucune pièce bougeante. Tout comme le relais électromécanique, ce qui est cool ici c'est que ça permet d'isoler le circuit de commande du circuit de puissance. Il n'y a aucun lien électrique entre les deux (si les masses sont bien séparées). Du coup, ça évite du parasitage par couplage galvanique entre les deux circuits (et donc à ton contrôle de partir en couilles).
+
+Transistor
+Comme tu l'as vu, eux ils sont utilisés dans les deux cas et peuvent même être utilisés seuls. Ce ne sont pas juste des switch comme les autres mais ils peuvent le faire, entre autres. Par contre, c'est tout un sujet de l'électronique donc je ne vais pas tout pouvoir détailler :p
+Et il y a encore plein d'autres façon de switcher. Mais ce que tu dois retenir c'est que le choix se fera en fonction de
+- la fréquence du signal à switcher
+- la fréquence à laquelle tu dois switcher
+- le prix
+- la puissance en jeu
+Pour ta voiture si tu dois juste allumer / éteindre de temps en temps. T'embête pas et prends un relais électromécanique :slight_smile: C'est le plus simple à utiliser, et ça fera parfaitement l'affaire tout en étant peu cher (il te faudra aussi un petit transistor pour le piloter mais rien de bien méchant ainsi qu'une diode pour protéger le transistor ^^ Enfin sauf si tu prends un module déjà tout fait) :slight_smile:
+themwaAujourd’hui à 22:48
+Merci pour ta réponse c'est très complet ^^, l'idée est effectivement de partir sur un module, il me semble que les GPIO du raspberry fournissent du 3.3v et tous les relais que je trouve sur amazon sont en 5V :/. 
+
+J'en profite pour te demander dans quelles applications concrètes on utilise les optocoupleurs, deux trois exemples si tu as ^^
+
+merci encore pour ta réponse :hugging:
+themwaAujourd’hui à 22:55
+Dans un article l'auteur précise simplement de placer une résistance entre le relai et les GPIO (en 3.3v), il ne semble pas pertinent de remonter la tension à 5v :thinking:. 
+
+Ces petits convertisseurs ne peuvent que abaisser la tension, pas la remonter ? (Ca sera ma dernière question ^^)
+
+Poil de nez magique ( ˘ ³˘)Aujourd’hui à 22:57
+Perso j'en ai surtout vu dans les circuits de conversion de puissance. Par exemple 5V DC vers 24V DC ou même en AC pour le même genre de montage. Et comme je l'ai dit ils sont mis entre le contrôle et la puissance car tu peux facilement séparer entièrement les deux circuits.
+
+En fait, la partie puissance dans ces circuits de conversion est "switchée" très rapidement (entre 30 et 100kHz souvent) et pour des puissances non négligeables. Ces deux facteurs sont déjà une source  d'emmerdes  (de parasites électromagnétiques). Du coup, pour pas être encore plus emmerdé, tu isoles bien les deux circuits pour éviter les parasites par couplage galvanique (directement par les pistes du circuit) pour ne pas que ça s'emballe ou simplement ne fonctionne pas. 
+
+Pour le module, ça doit se trouver. Genre ceci https://fr.aliexpress.com/item/33025164820.html?src=google&src=google&albch=shopping&acnt=494-037-6276&isdl=y&slnk=&plac=&mtctp=&albbt=Google_7_shopping&aff_platform=google&aff_short_key=UneMJZVf&&albagn=888888&albcp=9440871741&albag=99843983750&trgt=296904914040&crea=fr33025164820&netw=u&device=c&albpg=296904914040&albpd=fr33025164820&gclid=CjwKCAjwx9_4BRAHEiwApAt0zsxesPAuoh3MSCnYmkcX5VsqUuAcDRk8ohV9qCSuNyf8RDLK6w4QIxoCLbsQAvD_BwE&gclsrc=aw.ds.
+Si il y a des convertisseurs pour relever la tension. Ce sont les boost (entre autres) et non les bucks (qui eux abaissent).
+themwaAujourd’hui à 22:59
+Merci :thumbsup:, j'ai les idées plus claire ^^
+Poil de nez magique ( ˘ ³˘)Aujourd’hui à 23:02
+Dans un article l'auteur précise simplement de placer une résistance entre le relai et les GPIO (en 3.3v), il ne semble pas pertinent de remonter la tension à 5v . 
+Ca dépend du module en fait. Mais l'idée c'est d'avoir le bon courant au niveau du petit transistor qui commande le relais pour que tout fonctionne. Si la résistance est déjà présente sur le module tu ne pourras pas faire grand chose, sinon ouep tu pourras modifier. 
+
+Attention par contre, pour la partie alimentation du relais (donc pas le signal de contrôle) que tu ne peux peut être pas directement utiliser une pin de ta RPI. Ca demande quand même un peu de courant comme je l'ai dit au dessus et tu risque de flinguer ta carte si tu le branche n'importe où. Donc regarde bien comment ils font dans les tutos pour ne pas faire de bêtise(s) :wink: (je ne connais pas les RPI donc aucune idée des limitations en courant)
+Et de rien :smile:
