@@ -74,6 +74,13 @@ sudo gpsd /dev/ttyUSB2 -F /var/run/gpsd.sock # Manually start GPSD and connect t
 cgps -s # Run GPSD Display
 
 
+stty -F /dev/ttyAMA0 9600
+sudo gpsd /dev/ttyAMA0 -F /var/run/gpsd.sock
+cgps -s
+
+sudo killall gpsd
+
+
 cd /home/pi/SIM7000X-4G-HAT-Demo/Raspberry/c
 sudo ./sim7600_4G_hat_init
 
@@ -217,6 +224,12 @@ https://www.waveshare.com/wiki/SIM7600G-H_4G_HAT_(B)
 ---
 ## ICQUANZX GY-NEO6MV2 NEO-6M Module contrôleur de vol GPS 
 
+```bash
+sudo raspi-config # Enable Serial 
+
+cat /dev/ttyAMA0
+
+```
 
 ---
 ## SSH1106 GME12864 - 70 Ecran OLED I2C 128x64 Pixel
