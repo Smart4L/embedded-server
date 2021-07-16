@@ -59,34 +59,74 @@ Je déconseille aux débutants.
 
 ### 2. Connect & Plug SIM7600X 
 
+> Some nice video → https://www.youtube.com/watch?v=kwk3qzaIcCU
 
+|Name|Area|Owner|
+|--:|:--:|:--|
+|GPS|Global|USA|
+|GLONASS|Global|Russia|
+|BeiDou|Global|China|
+|Galileo|Global|Europe|
+|NavIC|Regional|India|
+|QZSS|Regional|Japan|
+
+
+* Serial Output use NMEA 0183 Standard (Comma delimited ASCII text)
+* Updated at rate of 1/sec
+* Each line is called a "sentence" {TIME},{LONGITUDE},{LATITUDE},{NUMBER_OF_VISIBLE_SATELLITE},{ALTITUDE}
+
+
+
+https://www.raspberrypi.org/forums/viewtopic.php?t=250657
 https://eco-sensors.ch/router-wifi-4g-hotspot/
+https://www.waveshare.com/wiki/SIM7600G-H_4G_DONGLE
+https://www.waveshare.com/wiki/Raspberry_Pi_networked_via_RNDIS
+
+Forum command list : https://techship.com/faq/basic-gnss-gps-usage-guide-for-simcom-sim7100-sim7500-sim7600-series-cellular-modules/
+Wiki : https://www.waveshare.com/wiki/SIM7600G-H_4G_for_Jetson_Nano
+https://www.waveshare.com/wiki/SIM800C_GSM/GPRS_HAT
+https://www.waveshare.com/wiki/SIM7600E-H_4G_HAT
+https://www.waveshare.com/wiki/SIM7600G-H_4G_HAT_(B)
+https://gitlab.com/scrobotics/balena-gps-tracker
+GPS : https://sparklers-the-makers.github.io/blog/robotics/use-neo-6m-module-with-raspberry-pi/
+https://www.waveshare.com/wiki/SIM7600G-H_4G_for_Jetson_Nano
+https://www.youtube.com/watch?v=9sGrmQrrIGs
 
 
+**LOOKING FOR**
 ```bash
-
-
-
-sudo apt install -y gpsd gpsd-clients
-sudo systemctl stop gpsd.socket
-sudo systemctl disable gpsd.socket
-sudo gpsd /dev/ttyUSB2 -F /var/run/gpsd.sock # Manually start GPSD and connect to GPS on USB0
-cgps -s # Run GPSD Display
-
-
-stty -F /dev/ttyAMA0 9600
-sudo gpsd /dev/ttyAMA0 -F /var/run/gpsd.sock
-cgps -s
-
-sudo killall gpsd
-
 
 cd /home/pi/SIM7000X-4G-HAT-Demo/Raspberry/c
 sudo ./sim7600_4G_hat_init
 
+```
+
+Connect the  Data 1 and Data 2  port  of  the modem to the PC using a micro USB cable.
+* Data 1 - AT command port for accessing AT commands.
+* Data 2 – Data port for accessing Internet , Audio, Calling and SMS, GPS.
+
+Baudrate = 115200
+
+```bash
+
+sudo lsusb # Show USB devices, looking for CygnalIntegratedProduct CP2102/CP2109 UART Bridge Controlleur
 
 
 
+# - Install GPS UI Tool -
+sudo apt install -y gpsd gpsd-clients
+sudo systemctl stop gpsd.socket # Stop it to disable
+sudo systemctl disable gpsd.socket # Free serial port
+sudo gpsd /dev/ttyUSB0 -F /var/run/gpsd.sock # Manually start GPSD and connect to GPS on USB0
+#sudo gpsd /dev/ttyUSB2 -F /var/run/gpsd.sock
+cgps -s # Run GPSD Display
+sudo killall gpsd
+
+# - Install serial tool -
+sudo apt-get install -y minicom # Testing AT command 
+sudo minicom -D /dev/ttyUSB2
+
+# - Install GSM tools -
 sudo apt install -y libqmi-utils udhcpc
 sudo qmicli -d /dev/cdc-wdm0 --dms-set-operating-mode='online'
 sudo qmicli -d /dev/cdc-wdm0 --dms-get-operating-mode # Get online status
@@ -98,11 +138,31 @@ sudo ip link set wwan0 up
 #sudo qmicli --device=/dev/cdc-wdm0 --device-open-proxy --wds-start-network="ip-type=4,apn=mmsfree" --client-no-release-cid
 sudo qmicli --device=/dev/cdc-wdm0 --device-open-proxy --wds-start-network="ip-type=4,apn=orange,username=orange,password=orange" --client-no-release-cid
 sudo udhcpc -i wwan0
+ifconfig wwan0 # Check connection and get public ip
+ifconfig # locate usb0 interface or alternative
+sudo dhclient -v usb0
+sudo dhclient -v wwan0
 
 
+# sudo ip link set wwan0 up
+# sudo udhcpc -i wwan0
+# ip a s wwan0
 
+# - Configure Serial -
+sudo raspi-config # Interface>Disable Serial Shell & Enable Serial Port 
+nano /boot/config.txt # Add
+# enable_uart=1
+# dtoverlay=pi3-disable-bt
+nano /boot/cmdline.txt # Remove
+# console=ttyAMA0,115200 & kgdboc=ttyAMA0,115200
 
+# - Configure serial port for GY-NEO6MV2 -
+stty -F /dev/ttyAMA0 9600
+cat /dev/ttyAMA0 # Get GPS data
+sudo gpsd /dev/ttyAMA0 -F /var/run/gpsd.sock # Start viewer tool
+cgps -s # Open viewer tool
 
+# - Use AT command -
 ls /dev/ttyUSB*
 sudo minicom -D /dev/ttyUSB2
 AT+CGMI # Manufacturer identification
@@ -110,6 +170,14 @@ AT+CGMM # Model identification
 AT+CGMR # Revision identification 
 AT+CPIN=1234 # Unlock sim card with pin code
 
+AT+CSPN? # Get service provider name from SIM
+
+# - Configure APN (default is valid not necessary) -
+AT
+AT+SETAPN="providerapn"
+AT+SETUSER="provideruser"
+AT+SETPWD="providerpassword"
+AT+SAVE
 # - Send sms -
 AT+CMGF=1 # Enable SMS text mode
 AT+CMGF=? # Should output +CMGF: (0,1)
@@ -123,82 +191,29 @@ AT+CSQ # Check sign quality
 ATD33650520266;
 AT+CHUP # Hang up current call or use ATH
 ATDL # Call the last dialled number
-
-
-
-
-
-AT+CGPS=1 # Enable  GPS ??
-AT+CGPSINFO
+# - GPS -
+AT+CGPS=1 # Turn on power of GPS, AT+CGPSHOT Hot Start GPS 
+# (Wait for the GPS to get the position) if you use script insert WAIT=15 command here (wait for 15sec)
+AT+CGPSINFO # Get GPS fixed position information
+AT+CGPS=0 # Turn off power of GPS
+AT+CGPSAUTO? # Start GPS automatic: 0 Non-Automatic 1 Automatic
 
 AT+CGPSPWR=1 # Turn GPS on
 AT+CGPSSTATUS? # Get GPS Status
 AT+CGPSRST=0 # Reset the GPS in autonomy mode
-WAIT=15 # Wait for the GPS reset
+
 AT+CGPSINF=0 # Get the current GPS location
-
-
-
-AT+CGPS=1,1 # out : OK
-AT+CGPSINFO # out : +CGPSINFO
-AT+CGPS=0 # out : OK  Tuen off GPS
-
-# sudo ip link set wwan0 up
-# sudo udhcpc -i wwan0
-# ip a s wwan0
-
-
-
 
 AT+CPSI?
 AT+CUSBPIDSWITCH=9011,1,1
 AT+CPSI?
 
-ifconfig # locate usb0 interface or alternative
-sudo dhclient -v usb0
-sudo dhclient -v wwan0
 
 
-
-
-# ah voilà il faut configurer l'APN
-AT
-AT+SETAPN=“providerapn”
-AT+SETUSER=“provideruser”
-AT+SETPWD=“providerpassword”
-AT+SAVE
-
-
-
-# https://www.waveshare.com/wiki/Raspberry_Pi_networked_via_RNDIS
-# Connect GPS position
-AT+CGPS=1
-# Now open the NEMA port, you can get GPS data:
-# Turn off GPS
-AT+CGPS=0
-
+# - Test internet connection -
 ifconfig -a # Looking for WWAN0 interface
-
-sudo apt-get install -y minicom # Testing AT command 
-sudo minicom -D /dev/ttyUSB2
-ifconfig wwan0 # Check connection and get public ip
-
 pip3 install speedtest_cli
 speedtest # or use speedtest_cli
-
-
-
-# 
-# script : https://www.waveshare.com/wiki/SIM7600G-H_4G_for_Jetson_Nano
-
-
-#
-# https://www.waveshare.com/wiki/SIM7600G-H_4G_DONGLE
-
-
-
-
-
 ```
 
 
@@ -208,25 +223,11 @@ speedtest # or use speedtest_cli
 
 ### 4. Get Data
 
-### Doc
-
-Forum command list : https://techship.com/faq/basic-gnss-gps-usage-guide-for-simcom-sim7100-sim7500-sim7600-series-cellular-modules/
-
-Wiki : https://www.waveshare.com/wiki/SIM7600G-H_4G_for_Jetson_Nano
-
-https://www.waveshare.com/wiki/SIM800C_GSM/GPRS_HAT
-https://www.waveshare.com/wiki/SIM7600E-H_4G_HAT
-https://www.waveshare.com/wiki/SIM7600G-H_4G_HAT_(B)
-
-
-
-
 ---
 ## ICQUANZX GY-NEO6MV2 NEO-6M Module contrôleur de vol GPS 
 
 ```bash
 sudo raspi-config # Enable Serial 
-
 cat /dev/ttyAMA0
 
 ```
@@ -399,12 +400,6 @@ disable_camera_led=1
 # Or GPIO port on camera : GPIO logic level. (HIGH --> Normal Mode, LOW --> Night-vision Mode)
 ```
 
-
-# GPS
-
-https://gitlab.com/scrobotics/balena-gps-tracker
-
-
 # Amazon
 
 Controlleur de charge https://www.amazon.fr/GEHOO-GH-7V-25-5V-R%C3%A9gulateur-Quadcopter/dp/B07DK6PF1V
@@ -418,9 +413,5 @@ Charge controller 2A 2S: https://www.ebay.fr/itm/253084504432
 Regulateur 12v 5v 3a: https://www.amazon.fr/Convertisseur-Regulateur-Adaptateur-dAlimentation-Smartphone/dp/B07H7J3HJS
 https://www.amazon.fr/R%C3%A9gulateur-Tension-Alimentation-Convertisseur-Abaisseur/dp/B07PVSLYTS/ref=sr_1_19
 
-GPS : https://sparklers-the-makers.github.io/blog/robotics/use-neo-6m-module-with-raspberry-pi/
 
-https://www.waveshare.com/wiki/SIM7600G-H_4G_for_Jetson_Nano
-
-https://www.youtube.com/watch?v=9sGrmQrrIGs
 
