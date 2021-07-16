@@ -83,7 +83,8 @@ https://www.waveshare.com/wiki/SIM7600G-H_4G_DONGLE
 https://www.waveshare.com/wiki/Raspberry_Pi_networked_via_RNDIS
 
 Forum command list : https://techship.com/faq/basic-gnss-gps-usage-guide-for-simcom-sim7100-sim7500-sim7600-series-cellular-modules/
-Wiki : https://www.waveshare.com/wiki/SIM7600G-H_4G_for_Jetson_Nano
+ALLER VOIR 👉 Wiki : https://www.waveshare.com/wiki/SIM7600G-H_4G_for_Jetson_Nano
+http://www.python-exemplary.com/index_en.php?inhalt_links=navigation_en.inc.php&inhalt_mitte=raspi/en/gsm.inc.php
 https://www.waveshare.com/wiki/SIM800C_GSM/GPRS_HAT
 https://www.waveshare.com/wiki/SIM7600E-H_4G_HAT
 https://www.waveshare.com/wiki/SIM7600G-H_4G_HAT_(B)
@@ -169,7 +170,6 @@ AT+CGMI # Manufacturer identification
 AT+CGMM # Model identification  
 AT+CGMR # Revision identification 
 AT+CPIN=1234 # Unlock sim card with pin code
-
 AT+CSPN? # Get service provider name from SIM
 
 # - Configure APN (default is valid not necessary) -
@@ -193,22 +193,10 @@ AT+CHUP # Hang up current call or use ATH
 ATDL # Call the last dialled number
 # - GPS -
 AT+CGPS=1 # Turn on power of GPS, AT+CGPSHOT Hot Start GPS 
-# (Wait for the GPS to get the position) if you use script insert WAIT=15 command here (wait for 15sec)
+# (Wait for the GPS to get the position) if you use script insert WAIT=15 command here (wait for 15sec) make sur antenna is outside
 AT+CGPSINFO # Get GPS fixed position information
 AT+CGPS=0 # Turn off power of GPS
 AT+CGPSAUTO? # Start GPS automatic: 0 Non-Automatic 1 Automatic
-
-AT+CGPSPWR=1 # Turn GPS on
-AT+CGPSSTATUS? # Get GPS Status
-AT+CGPSRST=0 # Reset the GPS in autonomy mode
-
-AT+CGPSINF=0 # Get the current GPS location
-
-AT+CPSI?
-AT+CUSBPIDSWITCH=9011,1,1
-AT+CPSI?
-
-
 
 # - Test internet connection -
 ifconfig -a # Looking for WWAN0 interface
