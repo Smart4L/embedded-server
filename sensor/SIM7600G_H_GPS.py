@@ -73,6 +73,9 @@ class SIM7600G_H_GPS():
     interation_counter=0
     buf = ''
     while interation_counter<10 and (buf in '+CGPSINFO: ,,,,,,,,' or buf ==''):
+      if interation_counter!=0:
+        time.sleep(5) # Waiting for GPS signal
+        
       self.serial.write(("AT+CGPSINFO"+'\r\n').encode())
             
       waiting_counter=0 # Some times CGPSINFO command result is slow to being retrieved
@@ -82,7 +85,7 @@ class SIM7600G_H_GPS():
 
       buf = self.serial.read(self.serial.inWaiting()).decode()
       
-      time.sleep(5) # Waiting for GPS signal
+      
 
       interation_counter+=1      
 
