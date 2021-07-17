@@ -9,6 +9,7 @@ from smart4l.Sensor import Sensor
 from smart4l.Persistence import Persistence
 from smart4l.utils.MeasureValue import MeasureValue
 from sensor.SensorMock import SensorMock, SensorMockJson
+from sensor.SIM7600G_H_GPS import SIM7600G_H_GPS
 
 class Smart4L():
 
@@ -25,6 +26,7 @@ class Smart4L():
     self.add_service("WS_SERVER", Service(self.ws_server))
     self.add_service("MOCK_SENSOR", Service(Sensor(SensorMock(), name="MockSensor", on_measure=self.update_data), delay=2)) 
     self.add_service("MOCK_SENSOR_JSON", Service(Sensor(SensorMockJson(), name="MockSensorJson", on_measure=self.update_data), delay=2)) 
+    self.add_service("SIM7600G_H_GPS", Service(Sensor(SIM7600G_H_GPS(), name="SIM7600G_H_GPS", on_measure=self.update_data), delay=0.3)) 
 
 
   def start(self) -> None:
