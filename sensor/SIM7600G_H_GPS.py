@@ -35,7 +35,8 @@ class SIM7600G_H_GPS():
     # <speed> Speed Over Ground. Unit is knots.
     # <course> Course. Degrees.
     # <time> The range is 0-255, unit is second, after set <time> will report the GPS information every the seconds.
-    cgpsinfo = self.get_current_location()    
+    
+    cgpsinfo = self.get_current_location()
     if re.match("\r?\n?AT\+CGPSINFO\r*\n*\+CGPSINFO: [0-9]+\.[0-9]+,[NS],[0-9]+\.[0-9]+,[EW].*", cgpsinfo):
       cgpsinfo = cgpsinfo.split('\r\n')[1].split(' ')[1].split(',')
       lat = float(cgpsinfo[0])/100
