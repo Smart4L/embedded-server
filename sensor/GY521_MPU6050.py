@@ -37,9 +37,20 @@ class GY521_MPU6050():
     
     print("--------------------------")
     print(inclinaisons)
-    print(self.fix_gyro['X'])
+    print(inclinaisons[0])
+    print(type(inclinaisons[0]))
+    print(inclinaisons[1])
+    print(type(inclinaisons[1]))
+    print(inclinaisons[2])
+    print(type(inclinaisons[2]))
+    print(self.fix_gyro)
     print("========================")
-    inclinaison = {'X': float(inclinaisons[0])-self.fix_gyro['X'], 'Y': float(inclinaisons[1])-self.fix_gyro['Y'],'Z': float(inclinaisons[2])-self.fix_gyro['Z']}
+    inclinaison = {
+      'X': float(inclinaisons[0])-self.fix_gyro['X'], 
+      'Y': float(inclinaisons[1])-self.fix_gyro['Y'],
+      'Z': float(inclinaisons[2])-self.fix_gyro['Z']
+      }
+
     return {'unit':'  ', 'value':{'acceleration': "{:6.2f},{:6.2f}".format(angle_xz, angle_yz), 'gyroscope': inclinaison, 'temperature': "%.2f"%self.mpu.temperature}}
 
   def stop(self) -> None:
