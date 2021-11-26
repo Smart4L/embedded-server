@@ -6,6 +6,7 @@ logger = logging.getLogger("SIM7600G_H_GPS")
 import re
 import serial
 import time
+from pynmeagps import NMEAMessage, GET
 
 class SIM7600G_H_GPS():
   def __init__(self, id=None, serial_port="/dev/ttyUSB2", timeout=0.5) -> None:
@@ -34,9 +35,12 @@ class SIM7600G_H_GPS():
       cgpsinfo = self.get_current_location()
       if re.match("\r?\n?AT\+CGPSINFO\r*\n*\+CGPSINFO: [0-9]+\.[0-9]+,[NS],[0-9]+\.[0-9]+,[EW].*", cgpsinfo):
         cgpsinfo = cgpsinfo.split('\r\n')[1].split(' ')[1].split(',')
-        lat = float(cgpsinfo[0])/100
-        log = float(cgpsinfo[2])/100
-        return {'unit':'°', 'value':{'latitude': lat *-1 if cgpsinfo[1]=="S" else lat,'longitude': log *-1 if cgpsinfo[3]=="W" else log, 'altitude': float(cgpsinfo[6]), 'speed':f"{cgpsinfo[7]} knots"}}
+        # lat = float(cgpsinfo[0])/100
+        # log = float(cgpsinfo[2])/100
+        pyld = [cgpsinfo[0],cgpsinfo[1],cgpsinfo[2],cgpsinfo[3], cgpsinfo[5], 'A', 'A']
+        msg = NMEAMessage('GN', 'GLL', GET, payload=pyld)
+        return {'unit':'°', 'value':{'latitude': msg.lat,'longitude': msg.lon , 'altitude': float(cgpsinfo[6]), 'speed':f"{cgpsinfo[7]}"}}
+        # return {'unit':'°', 'value':{'latitude': lat *-1 if cgpsinfo[1]=="S" else lat,'longitude': log *-1 if cgpsinfo[3]=="W" else log, 'altitude': float(cgpsinfo[6]), 'speed':f"{cgpsinfo[7]} knots"}}
       else:
         return None
     except:
