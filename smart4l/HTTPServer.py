@@ -7,12 +7,13 @@ from flask import Flask, jsonify, request, render_template
 from smart4l.utils.RunnableObjectInterface import RunnableObjectInterface
 
 class HTTPServer(RunnableObjectInterface):
-  def __init__(self, host, port, services=None, measures=None, persistence=None) -> None:
+  def __init__(self, host, port, services=None, measures=None, persistence=None, gyro=None) -> None:
     self.app = Flask(__name__)
     self.conf = {"host": host, "port": port}
     self.services = services
     self.measures = measures
     self.persistence = persistence
+    self.gyro = gyro
     self.router()
 
   def router(self):
@@ -20,6 +21,7 @@ class HTTPServer(RunnableObjectInterface):
     self.app.add_url_rule('/service', 'service', self.service)
     self.app.add_url_rule('/measure', 'measure', self.measure)
     self.app.add_url_rule('/history', 'history', self.history)
+    self.app.add_url_rule('/reset-gyro', 'reset-gyro', self.reset_gyro)
     self.app.add_url_rule('/shutdown', 'shutdown', self.shutdown)
     #self.app.add_url_rule('/log', 'log', self.log)
 
@@ -49,6 +51,9 @@ class HTTPServer(RunnableObjectInterface):
 
   def measure(self):
     return jsonify([{"name":key,"measure": value} for key,value in self.measures.items()])
+  
+  def reset_gyro(self):
+    self.gyro.reset_gyro()
 
   # Must be call from HTTP request 👉 GET:http://domain/shutdown
   def shutdown(self):
