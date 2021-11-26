@@ -34,17 +34,7 @@ class GY521_MPU6050():
   def measure(self) -> dict:
     angle_xz, angle_yz = self.get_inclination(self.mpu)
     inclinaisons = "%.2f,%.2f,%.2f"%(self.mpu.acceleration)
-    
-    print("--------------------------")
-    print(inclinaisons)
-    print(inclinaisons[0])
-    print(type(inclinaisons[0]))
-    print(inclinaisons[1])
-    print(type(inclinaisons[1]))
-    print(inclinaisons[2])
-    print(type(inclinaisons[2]))
-    print(self.fix_gyro)
-    print("========================")
+    inclinaisons = inclinaisons.split(',')
     inclinaison = {
       'X': float(inclinaisons[0])-self.fix_gyro['X'], 
       'Y': float(inclinaisons[1])-self.fix_gyro['Y'],
