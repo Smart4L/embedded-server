@@ -17,7 +17,7 @@ class Smart4L():
   def __init__(self, database_file_path) -> None:
     self.services = {}
     self.last_measure = {}
-    gyroscope = GY521_MPU6050()
+    gyroscope = GY521_MPU6050(id='GY521_MPU6050')
 
     self.persistence = Persistence(database_file_path=database_file_path, measures=self.last_measure)
     self.http_server = HTTPServer(host="0.0.0.0", port=8080, services=self.services, measures=self.last_measure, persistence=self.persistence, gyroscope=gyroscope)
