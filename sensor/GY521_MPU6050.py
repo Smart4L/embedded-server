@@ -16,7 +16,15 @@ class GY521_MPU6050():
     self.fix_gyro = {'X':0, 'Y':0, 'Z': 0}
 
   def reset_gyro(self):
-    self.fix_gyro = {'X':self.measure()['value']['gyroscope']['X'], 'Y':self.measure()['value']['gyroscope']['Y'], 'Z':self.measure()['value']['gyroscope']['Z']}
+    angle_xz, angle_yz = self.get_inclination(self.mpu)
+    inclinaisons = "%.2f,%.2f,%.2f"%(self.mpu.acceleration)
+    inclinaisons = inclinaisons.split(',')
+    inclinaison = {
+      'X': float(inclinaisons[0]), 
+      'Y': float(inclinaisons[1]),
+      'Z': float(inclinaisons[2])
+      }
+    self.fix_gyro = {'X':inclinaison['X'], 'Y':inclinaison['Y'], 'Z':inclinaison['Z']}
 
 
   def vector_2_degrees(self, x, y):
@@ -30,6 +38,7 @@ class GY521_MPU6050():
   def get_inclination(self, _sensor):
     x, y, z = _sensor.acceleration
     return self.vector_2_degrees(x, z), self.vector_2_degrees(y, z)
+
 
   def measure(self) -> dict:
     angle_xz, angle_yz = self.get_inclination(self.mpu)
