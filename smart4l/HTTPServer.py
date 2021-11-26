@@ -54,6 +54,8 @@ class HTTPServer(RunnableObjectInterface):
   
   def reset_gyro(self):
     self.gyroscope.reset_gyro()
+    return jsonify(self.gyroscope.measure())
+
 
   # Must be call from HTTP request 👉 GET:http://domain/shutdown
   def shutdown(self):
