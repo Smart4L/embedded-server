@@ -13,7 +13,7 @@ class GY521_MPU6050():
     self.id_sensor = id
     self.i2c = busio.I2C(board.SCL, board.SDA)
     self.mpu = adafruit_mpu6050.MPU6050(self.i2c, address=address)
-    self.fix_gyro = {'X':0, 'Y':0}
+    self.fix_gyro = {'X':0, 'Y':0, 'Z': 0}
 
   def reset_gyro():
     self.fix_gyro = {'X':self.measure()['value']['gyroscope']['X'], 'Y':self.measure()['value']['gyroscope']['Y'], 'Z':self.measure()['value']['gyroscope']['Z']}
