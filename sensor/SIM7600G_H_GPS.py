@@ -58,7 +58,15 @@ class SIM7600G_H_GPS():
       self.serial = serial.Serial(self.port, 115200)
       self.serial.flushInput()
     except:
-      logger.error(f"Unable to open serial connection on {self.port}")
+      logger.error(f"Unable to open serial connection on {self.port}, try with /dev/ttyS0")
+      try:
+        self.serial = serial.Serial("/dev/ttyS0", 115200)
+        self.serial.flushInput()
+      except:
+        logger.error(f"GPS Serial connection failed on port /dev/ttyS0 and {self.port}")
+
+
+
 
 
   def send_serial_command(self, command):
