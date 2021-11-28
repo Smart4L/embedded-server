@@ -21,7 +21,7 @@ class Sensor(RunnableObjectInterface):
       if not measure==None:
         self.on_measure(MeasureValue(id=self.name, date=str(time.ctime()), value=measure['value'], unit=measure['unit']))
     except:
-      logger.exception(f"Sensor {name} {str(sensor_object)} : {sys.exc_info()}")      
+      logger.exception(f"Sensor {self.name} {str(self.sensor_object)} : {sys.exc_info()}")    
 
   def stop(self):
     self.sensor_object.stop()

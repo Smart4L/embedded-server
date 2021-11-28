@@ -6,18 +6,14 @@ logger = logging.getLogger("SIM7600G_H_GPS")
 import re
 import serial
 import time
+from pynmeagps import NMEAMessage, GET
 
 class SIM7600G_H_GPS():
   def __init__(self, id=None, serial_port="/dev/ttyUSB2", timeout=0.5) -> None:
     self.id_sensor = id
     self.port = serial_port
     self.serial = None
-    try:
-      self.serial = serial.Serial(serial_port, 115200)
-      self.serial.flushInput()
-    except:
-      logger.error(f"Unable to open serial connection on {serial_port}")
-
+    self.open_serial()
     self.timeout = timeout
     if not self.check_gps_power_status() in '+CGPS: 1,1':
       self.enable_gps()
@@ -35,15 +31,35 @@ class SIM7600G_H_GPS():
     # <speed> Speed Over Ground. Unit is knots.
     # <course> Course. Degrees.
     # <time> The range is 0-255, unit is second, after set <time> will report the GPS information every the seconds.
-    
-    cgpsinfo = self.get_current_location()
-    if re.match("\r?\n?AT\+CGPSINFO\r*\n*\+CGPSINFO: [0-9]+\.[0-9]+,[NS],[0-9]+\.[0-9]+,[EW].*", cgpsinfo):
-      cgpsinfo = cgpsinfo.split('\r\n')[1].split(' ')[1].split(',')
-      lat = float(cgpsinfo[0])/100
-      log = float(cgpsinfo[2])/100
-      return {'unit':'°', 'value':{'latitude': lat *-1 if cgpsinfo[1]=="S" else lat,'longitude': log *-1 if cgpsinfo[3]=="W" else log, 'altitude': float(cgpsinfo[6]), 'speed':f"{cgpsinfo[7]} knots"}}
-    else:
-      return None
+    try:
+      cgpsinfo = self.get_current_location()
+      if re.match("\r?\n?AT\+CGPSINFO\r*\n*\+CGPSINFO: [0-9]+\.[0-9]+,[NS],[0-9]+\.[0-9]+,[EW].*", cgpsinfo):
+        cgpsinfo = cgpsinfo.split('\r\n')[1].split(' ')[1].split(',')
+        # lat = float(cgpsinfo[0])/100
+        # log = float(cgpsinfo[2])/100
+        pyld = [cgpsinfo[0],cgpsinfo[1],cgpsinfo[2],cgpsinfo[3], cgpsinfo[5], 'A', 'A']
+        msg = NMEAMessage('GN', 'GLL', GET, payload=pyld)
+        return {'unit':'°', 'value':{'latitude': msg.lat,'longitude': msg.lon , 'altitude': float(cgpsinfo[6]), 'speed':f"{cgpsinfo[7]}"}}
+        # return {'unit':'°', 'value':{'latitude': lat *-1 if cgpsinfo[1]=="S" else lat,'longitude': log *-1 if cgpsinfo[3]=="W" else log, 'altitude': float(cgpsinfo[6]), 'speed':f"{cgpsinfo[7]} knots"}}
+      else:
+        return None
+    except:
+      self.open_serial()
+      raise
+
+  def open_serial(self):
+    try:
+      if not self.serial == None:
+        self.serial.close()
+    except:
+      pass
+
+    try:
+      self.serial = serial.Serial(self.port, 115200)
+      self.serial.flushInput()
+    except:
+      logger.error(f"Unable to open serial connection on {self.port}")
+
 
   def send_serial_command(self, command):
     self.serial.write((command+'\r\n').encode())

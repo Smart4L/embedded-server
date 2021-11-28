@@ -10,15 +10,17 @@ from smart4l.Persistence import Persistence
 from smart4l.utils.MeasureValue import MeasureValue
 from sensor.SensorMock import SensorMock, SensorMockJson
 from sensor.SIM7600G_H_GPS import SIM7600G_H_GPS
+from sensor.GY521_MPU6050 import GY521_MPU6050
 
 class Smart4L():
 
   def __init__(self, database_file_path) -> None:
     self.services = {}
     self.last_measure = {}
+    gyroscope = GY521_MPU6050(id='GY521_MPU6050')
 
     self.persistence = Persistence(database_file_path=database_file_path, measures=self.last_measure)
-    self.http_server = HTTPServer(host="0.0.0.0", port=8080, services=self.services, measures=self.last_measure, persistence=self.persistence)
+    self.http_server = HTTPServer(host="0.0.0.0", port=8080, services=self.services, measures=self.last_measure, persistence=self.persistence, gyroscope=gyroscope)
     self.ws_server = WebSocketServerController(asyncio.get_event_loop(), host="0.0.0.0", port=8082, measures=self.last_measure)
     
     self.add_service("DB", Service(self.persistence, delay=20))
@@ -27,6 +29,7 @@ class Smart4L():
     self.add_service("MOCK_SENSOR", Service(Sensor(SensorMock(), name="MockSensor", on_measure=self.update_data), delay=2)) 
     self.add_service("MOCK_SENSOR_JSON", Service(Sensor(SensorMockJson(), name="MockSensorJson", on_measure=self.update_data), delay=2)) 
     self.add_service("SIM7600G_H_GPS", Service(Sensor(SIM7600G_H_GPS(), name="SIM7600G_H_GPS", on_measure=self.update_data), delay=0.3)) 
+    self.add_service("GY521_MPU6050", Service(Sensor(gyroscope, name="GY521_MPU6050", on_measure=self.update_data), delay=2)) 
 
 
   def start(self) -> None:
