@@ -4,16 +4,20 @@ import logging
 import requests
 import json
 from flask import Flask, jsonify, request, render_template
+from flask_cors import CORS, cross_origin
+
 from smart4l.utils.RunnableObjectInterface import RunnableObjectInterface
 
 class HTTPServer(RunnableObjectInterface):
-  def __init__(self, host, port, services=None, measures=None, persistence=None, gyroscope=None) -> None:
+  def __init__(self, host, port, services=None, measures=None, persistence=None, gyroscope=None, relays=None) -> None:
     self.app = Flask(__name__)
+    CORS(self.app)
     self.conf = {"host": host, "port": port}
     self.services = services
     self.measures = measures
     self.persistence = persistence
     self.gyroscope = gyroscope
+    self.relays = relays
     self.router()
 
   def router(self):
@@ -22,6 +26,9 @@ class HTTPServer(RunnableObjectInterface):
     self.app.add_url_rule('/measure', 'measure', self.measure)
     self.app.add_url_rule('/history', 'history', self.history)
     self.app.add_url_rule('/reset-gyro', 'reset-gyro', self.reset_gyro)
+    self.app.add_url_rule('/relay/<name>', 'relay_post', self.relay_post, methods = ['POST'])
+    self.app.add_url_rule('/relay/<name>', 'relay_delete', self.relay_delete, methods = ['DELETE'])
+    self.app.add_url_rule('/relay/<name>', 'relay_get', self.relay_get, methods = ['GET'])
     self.app.add_url_rule('/shutdown', 'shutdown', self.shutdown)
     #self.app.add_url_rule('/log', 'log', self.log)
 
@@ -55,6 +62,20 @@ class HTTPServer(RunnableObjectInterface):
   def reset_gyro(self):
     self.gyroscope.reset_gyro()
     return jsonify(self.gyroscope.measure())
+  
+  def relay_get(self, name):
+    relay = next(relay for relay in self.relays if relay.name==name)    
+    return jsonify(relay.get_status())
+    
+  def relay_post(self, name):
+    relay = next(relay for relay in self.relays if relay.name==name)
+    relay.on()
+    return jsonify(relay.get_status()) 
+  
+  def relay_delete(self, name):
+    relay = next(relay for relay in self.relays if relay.name==name)
+    relay.off()
+    return jsonify(relay.get_status()) 
 
 
   # Must be call from HTTP request 👉 GET:http://domain/shutdown

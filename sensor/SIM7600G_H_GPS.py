@@ -39,7 +39,7 @@ class SIM7600G_H_GPS():
         # log = float(cgpsinfo[2])/100
         pyld = [cgpsinfo[0],cgpsinfo[1],cgpsinfo[2],cgpsinfo[3], cgpsinfo[5], 'A', 'A']
         msg = NMEAMessage('GN', 'GLL', GET, payload=pyld)
-        return {'unit':'°', 'value':{'latitude': msg.lat,'longitude': msg.lon , 'altitude': float(cgpsinfo[6]), 'speed':f"{cgpsinfo[7]}"}}
+        return {'value':{'latitude': msg.lat,'longitude': msg.lon , 'altitude': float(cgpsinfo[6]), 'speed':f"{cgpsinfo[7]}"}}
         # return {'unit':'°', 'value':{'latitude': lat *-1 if cgpsinfo[1]=="S" else lat,'longitude': log *-1 if cgpsinfo[3]=="W" else log, 'altitude': float(cgpsinfo[6]), 'speed':f"{cgpsinfo[7]} knots"}}
       else:
         return None

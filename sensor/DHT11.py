@@ -18,13 +18,11 @@ class DHT11():
     try:
         temperature_c = self.dht_device.temperature #"{:.1f}"%
         humidity = self.dht_device.humidity
-        return {
-          "temperature": { "value":temperature_c, "unit":"°C"},
-          "humidity" : { "value":humidity, "unit":"%" }
-        }
+        return { "value": { "temperature": temperature_c, "humidity" : humidity } }
+        
     except RuntimeError as error:
         # Errors happen fairly often, DHT's are hard to read, just keep going
-        print(error.args[0])
+        raise error.args[0]
     except Exception as error:
         self.dht_device.exit()
         raise error

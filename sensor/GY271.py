@@ -51,11 +51,7 @@ class GY271():
     temp = self.sensor.read_temp()
     angles = self.sensor.get_angles()
     #temp = "{:.1f}"%temp
-    return {
-      "temperature": { "value":temp, "unit":"°C"},
-      "angles" : { "value":angles, "unit":"°" },
-      "bearing" : { "value":bearing, "unit":"°" }
-    }    
+    return { "value": {"temperature": temp, "angles" : angles, "bearing" : bearing} }    
 
   def stop(self) -> None:
     pass

@@ -31,7 +31,7 @@ class WebSocketServer():
   async def send_to_clients(self, message: str) -> None:
     if self.clients:
       await asyncio.wait([client.send(message) for client in self.clients])
-      logger.info(f'WebSocket Sent to clients {",".join([f"{client.remote_address[0]}:{client.remote_address[1]}" for client in self.clients])}, message: {message}')
+      #logger.info(f'WebSocket Sent to clients {",".join([f"{client.remote_address[0]}:{client.remote_address[1]}" for client in self.clients])}, message: {message}')
 
   # Handle client connection
   async def ws_handler(self, ws: WebSocketServerProtocol, uri: str) -> None:

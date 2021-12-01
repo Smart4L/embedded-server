@@ -50,7 +50,7 @@ class GY521_MPU6050():
       'Z': float(inclinaisons[2])-self.fix_gyro['Z']
       }
 
-    return {'unit':'  ', 'value':{'acceleration': "{:6.2f},{:6.2f}".format(angle_xz, angle_yz), 'gyroscope': inclinaison, 'temperature': "%.2f"%self.mpu.temperature}}
+    return {'value':{'acceleration': "{:6.2f},{:6.2f}".format(angle_xz, angle_yz), 'gyroscope': inclinaison, 'temperature': "%.2f"%self.mpu.temperature}}
 
   def stop(self) -> None:
     pass
@@ -60,3 +60,14 @@ class GY521_MPU6050():
 
   def __repr__(self):
     return str(self)
+
+
+if __name__ == '__main__':
+  sensor = GY521_MPU6050("GY521_MPU6050")
+  try:
+    while True:
+      print(sensor.measure())
+      time.sleep(1)
+  except Exception as e:
+    print(e)
+
