@@ -122,11 +122,11 @@ class Compass():
     
     # due to declination check for >360 degree
     if(heading > 2.0 * pi):
-        heading = heading - 2.0 * pi
+      heading = heading - 2.0 * pi
     
     # check for sign
     if(heading < 0.0):
-        heading = heading + 2.0 * pi
+      heading = heading + 2.0 * pi
     
     # convert into angle
     heading_angle = int(heading * 180.0 / pi)    
@@ -149,8 +149,8 @@ if __name__ == '__main__':
   sensor = GY271("GY271")
   try:
     while True:
-      print(sensor.measure())
+      print(sensor.measure()["value"]["bearing"])
       sleep(1)
-  except:
-    print("KeyboardInterpute")
+  except Exception as e:
+    print(e)
 

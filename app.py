@@ -11,7 +11,7 @@ from smart4l.Smart4L import Smart4L
 app = None
 
 def main():
-  logging.basicConfig(level=logging.DEBUG, datefmt='%d-%m-%Y %H:%M:%S') # Set logger
+  logging.basicConfig(level=logging.INFO, datefmt='%d-%m-%Y %H:%M:%S') # Set logger level https://docs.python.org/3/library/logging.html#levels
   signal.signal(signal.SIGTERM, stop) # execute stop function when SIGTERM received
   global app
   app = Smart4L(database_file_path=os.path.dirname(__file__))

@@ -19,7 +19,7 @@ class WebSocketServer():
 
   # remove client from clients list
   async def unregister(self, ws: WebSocketServerProtocol) -> None:
-    await ws.close(1000,"Normal Closure")
+    await ws.close(1000,"Normal Closure") # 1006
     self.clients.remove(ws)
     logger.info(f"WebSocket client from {ws.remote_address} disconnects.")
 
@@ -53,7 +53,7 @@ class WebSocketServer():
         pass
       # await self.send_to_clients(message)
     except websockets.ConnectionClosed:
-      raise   
+      await self.unregister(ws)
 
   # Close connection for all client in clients list 
   async def close_all_connections(self):
