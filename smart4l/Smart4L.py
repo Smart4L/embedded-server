@@ -14,6 +14,7 @@ from sensor.GY521_MPU6050 import GY521_MPU6050
 from sensor.DS18B20 import DS18B20
 from sensor.DHT11 import DHT11
 from sensor.GY271 import GY271
+from sensor.BMP280 import BMP280
 from sensor.Relay import Relay
 
 class Smart4L():
@@ -37,7 +38,8 @@ class Smart4L():
     
     self.add_service("DS18B20_28-01193a459cac", Service(Sensor(DS18B20(id="28-01193a459cac", sensor_serial_id="28-01193a459cac"), name="DS18B20_28-01193a459cac", on_measure=self.update_data), delay=1)) 
     self.add_service("DS18B20_28-01193a2abb07", Service(Sensor(DS18B20(id="28-01193a2abb07", sensor_serial_id="28-01193a2abb07"), name="DS18B20_28-01193a2abb07", on_measure=self.update_data), delay=1)) 
-    self.add_service("GY271", Service(Sensor(GY271(id='GY271'), name="GY271", on_measure=self.update_data), delay=0.1)) 
+    self.add_service("GY271", Service(Sensor(GY271(id='GY271'), name="GY271", on_measure=self.update_data), delay=0.2)) 
+    self.add_service("BMP280", Service(Sensor(BMP280(id='BMP280'), name="BMP280", on_measure=self.update_data), delay=3)) 
     self.add_service("DHT11_25", Service(Sensor(DHT11(id='DHT11_25'), name="DHT11_25", on_measure=self.update_data), delay=1)) 
     self.add_service("SIM7600G_H_GPS", Service(Sensor(SIM7600G_H_GPS(id="SIM7600G_H_GPS"), name="SIM7600G_H_GPS", on_measure=self.update_data), delay=0.3)) 
     self.add_service("GY521_MPU6050", Service(Sensor(gyroscope, name="GY521_MPU6050", on_measure=self.update_data), delay=0.2)) 

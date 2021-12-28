@@ -24,3 +24,8 @@ sqlitebrowser
 ```
 
 
+## Install
+
+```bash
+
+```

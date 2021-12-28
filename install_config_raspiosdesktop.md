@@ -388,6 +388,17 @@ disable_camera_led=1
 # Or GPIO port on camera : GPIO logic level. (HIGH --> Normal Mode, LOW --> Night-vision Mode)
 ```
 
+# Edit file thourgth SSH
+
+https://www.martinrowan.co.uk/2015/07/live-editing-raspberry-pi-files-remotely-windows-pc-using-sublime-text-rsub-putty/
+
+```bash
+ssh -R 52698:localhost:52698 pi@192.168.1.36
+
+rsub somefile.txt
+```
+
+
 # Amazon
 
 Controlleur de charge https://www.amazon.fr/GEHOO-GH-7V-25-5V-R%C3%A9gulateur-Quadcopter/dp/B07DK6PF1V
