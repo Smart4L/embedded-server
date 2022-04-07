@@ -7,6 +7,7 @@ from smart4l.WebSocketServerController import WebSocketServerController
 from smart4l.Service import Service
 from smart4l.Sensor import Sensor
 from smart4l.Persistence import Persistence
+from smart4l.ExportData import ExportData
 from smart4l.utils.MeasureValue import MeasureValue
 from sensor.SensorMock import SensorMock, SensorMockJson
 from sensor.SIM7600G_H_GPS import SIM7600G_H_GPS
@@ -39,7 +40,7 @@ class Smart4L():
     
     self.add_service("DS18B20_28-01193a459cac", Service(Sensor(DS18B20(id="28-01193a459cac", sensor_serial_id="28-01193a459cac"), name="DS18B20_28-01193a459cac", on_measure=self.update_data), delay=1)) 
     self.add_service("DS18B20_28-01193a2abb07", Service(Sensor(DS18B20(id="28-01193a2abb07", sensor_serial_id="28-01193a2abb07"), name="DS18B20_28-01193a2abb07", on_measure=self.update_data), delay=1)) 
-    self.add_service("GY271", Service(Sensor(GY271(id='GY271'), name="GY271", on_measure=self.update_data), delay=0.2)) 
+    #self.add_service("GY271", Service(Sensor(GY271(id='GY271'), name="GY271", on_measure=self.update_data), delay=0.2)) 
     self.add_service("BMP280", Service(Sensor(BMP280(id='BMP280'), name="BMP280", on_measure=self.update_data), delay=3)) 
     self.add_service("DHT11_25", Service(Sensor(DHT11(id='DHT11_25'), name="DHT11_25", on_measure=self.update_data), delay=1)) 
     self.add_service("SIM7600G_H_GPS", Service(Sensor(SIM7600G_H_GPS(id="SIM7600G_H_GPS"), name="SIM7600G_H_GPS", on_measure=self.update_data), delay=0.3)) 
