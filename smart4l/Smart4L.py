@@ -32,6 +32,7 @@ class Smart4L():
     self.http_server = HTTPServer(host="0.0.0.0", port=8080, services=self.services, measures=self.last_measure, persistence=self.persistence, gyroscope=gyroscope, relays=[relay_phare, relay_klaxon, relay_ventilateur1, relay_ventilateur2])
     self.ws_server = WebSocketServerController(asyncio.get_event_loop(), host="0.0.0.0", port=8082, measures=self.last_measure)
     
+    self.add_service("ExportData", Service(ExportData(self.last_measure, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNjQ5MzY0MzEzLCJleHAiOjE2NTgwMDQzMTN9.p60M-E9xKj7bpcQG9xogovZVnwvHi5bSWjbCp8Hgxco'), delay=120))
     self.add_service("DB", Service(self.persistence, delay=20))
     self.add_service("HTTP", Service(self.http_server))
     self.add_service("WS_SERVER", Service(self.ws_server))

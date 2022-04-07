@@ -3,7 +3,7 @@
 import logging
 import requests
 import json
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, Response, send_file
 from flask_cors import CORS, cross_origin
 
 from smart4l.utils.RunnableObjectInterface import RunnableObjectInterface
@@ -29,9 +29,9 @@ class HTTPServer(RunnableObjectInterface):
     self.app.add_url_rule('/relay/<name>', 'relay_post', self.relay_post, methods = ['POST'])
     self.app.add_url_rule('/relay/<name>', 'relay_delete', self.relay_delete, methods = ['DELETE'])
     self.app.add_url_rule('/relay/<name>', 'relay_get', self.relay_get, methods = ['GET'])
+    self.app.add_url_rule('/tile/<zoom>/<x>/<y>.png', 'tile', self.get_img)
     self.app.add_url_rule('/shutdown', 'shutdown', self.shutdown)
     #self.app.add_url_rule('/log', 'log', self.log)
-
 
   # Abstract method of RunnableObjectInterface
   def do(self):
@@ -77,6 +77,13 @@ class HTTPServer(RunnableObjectInterface):
     relay.off()
     return jsonify(relay.get_status()) 
 
+  def get_img(zoom = None, x = None, y = None):
+    if(os.path.isfile(f'tiles/{zoom}-{x}-{y}.png')):
+        return send_file(f'tiles/{zoom}-{x}-{y}.png', mimetype='image/png')
+        with open(f'tiles/{zoom}-{x}-{y}.png', 'r') as handler:
+            return(handler)
+    else:
+        return send_file(f'tiles/{0}-{0}-{0}.png', mimetype='image/png')
 
   # Must be call from HTTP request 👉 GET:http://domain/shutdown
   def shutdown(self):
