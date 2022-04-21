@@ -22,12 +22,13 @@ class ExportData(RunnableObjectInterface):
       'Authorization': f'Bearer {self.token}',
       'Content-Type': 'application/json'
     }
-    for sensor_id, measure in self.measures.items():
-      payload = json.dumps({"name":sensor_id, "date":measure['date'], "value":json.dumps(measure['value'])})
-      response = requests.request("POST", url, headers=headers, data=payload)
-
-    logger.info(f"ExportData: send {len(self.measures)} requests")
-
+    try:
+      for sensor_id, measure in self.measures.items():
+        payload = json.dumps({"name":sensor_id, "date":measure['date'], "value":json.dumps(measure['value'])})
+        response = requests.request("POST", url, headers=headers, data=payload)
+      logger.info(f"ExportData: send {len(self.measures)} requests")
+    except:
+      pass
   def stop(self):
     pass
 
