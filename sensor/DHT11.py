@@ -19,13 +19,14 @@ class DHT11():
         temperature_c = self.dht_device.temperature #"{:.1f}"%
         humidity = self.dht_device.humidity
         return { "value": { "temperature": temperature_c, "humidity" : humidity } }
-        
     except RuntimeError as error:
         # Errors happen fairly often, DHT's are hard to read, just keep going
-        raise error.args[0]
+        # raise error.args[0]
+        return None
     except Exception as error:
         self.dht_device.exit()
-        raise error
+        # raise error
+        return None
 
   def stop(self) -> None:
     self.dht_device.exit()
@@ -43,6 +44,6 @@ if __name__ == '__main__':
       print(sensor.measure())
       time.sleep(1)
   except:
-    print("KeyboardInterpute")
+    print("KeyboardInterupt")
 
   

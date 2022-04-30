@@ -49,12 +49,15 @@ class DS18B20():
 if __name__ == '__main__':
   # Get all sensor serial id
   print(DS18B20.get_all_serial_id())
-  sensor=DS18B20('28-01193a2abb07', '28-01193a2abb07')
-  try:
-    while True:
-      print(sensor.measure())
-      time.sleep(1)
-  except:
-    print("KeyboardInterpute")
+  sensors=[]
+  for s in DS18B20.get_all_serial_id():
+    sensors.append(DS18B20(s, s))
+  # try:
+  while True:
+    for sensor in sensors:
+      print(sensor.id_sensor+":"+str(sensor.measure()))
+    time.sleep(1)
+  # except:
+  #     print("KeyboardInterpute")
 
   

@@ -6,13 +6,22 @@ logger = logging.getLogger("SIM7600G_H_GPS")
 import re
 import serial
 import time
+import subprocess
 from pynmeagps import NMEAMessage, GET
+from datetime import datetime
+
+
 
 class SIM7600G_H_GPS():
   def __init__(self, id=None, serial_port="/dev/ttyUSB2", timeout=0.5) -> None:
+    self.retry=0
+    self.then = datetime.now()
     self.id_sensor = id
     self.port = serial_port
     self.serial = None
+
+    #output = subprocess.getoutput("ifconfig wwan0 | egrep -o 'inet [0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}'  | cut -d' ' -f2")
+    #if not output.startswith("169."):
     self.open_serial()
     self.timeout = timeout
     if not self.check_gps_power_status() in '+CGPS: 1,1':
@@ -115,8 +124,12 @@ class SIM7600G_H_GPS():
     return buf
 
   def stop(self) -> None:
-    self.disable_gps()
-    self.serial.close()
+    try:
+      self.disable_gps()
+      self.serial.close()
+    except:
+      logger.warning(f"Unable to close serial")
+      
 
   def __str__(self):
     return f'Sensor:{self.id_sensor}'
