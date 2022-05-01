@@ -3,6 +3,7 @@
 import logging
 import requests
 import json
+import os
 from flask import Flask, jsonify, request, render_template, Response, send_file
 from flask_cors import CORS, cross_origin
 
@@ -77,13 +78,13 @@ class HTTPServer(RunnableObjectInterface):
     relay.off()
     return jsonify(relay.get_status()) 
 
-  def get_img(zoom = None, x = None, y = None):
-    if(os.path.isfile(f'tiles/{zoom}-{x}-{y}.png')):
-        return send_file(f'tiles/{zoom}-{x}-{y}.png', mimetype='image/png')
-        with open(f'tiles/{zoom}-{x}-{y}.png', 'r') as handler:
+  def get_img(self, zoom = None, x = None, y = None):
+    if(os.path.isfile(f'/media/pi/SSD_Nvme/tiles/{zoom}-{x}-{y}.png')):
+        return send_file(f'/media/pi/SSD_Nvme/tiles/{zoom}-{x}-{y}.png', mimetype='image/png')
+        with open(f'/media/pi/SSD_Nvme/tiles/{zoom}-{x}-{y}.png', 'r') as handler:
             return(handler)
     else:
-        return send_file(f'tiles/{0}-{0}-{0}.png', mimetype='image/png')
+        return send_file(f'/media/pi/SSD_Nvme/tiles/{0}-{0}-{0}.png', mimetype='image/png')
 
   # Must be call from HTTP request 👉 GET:http://domain/shutdown
   def shutdown(self):
