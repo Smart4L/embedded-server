@@ -41,14 +41,17 @@ class GY521_MPU6050():
 
 
   def measure(self) -> dict:
-    angle_xz, angle_yz = self.get_inclination(self.mpu)
-    inclinaisons = "%.2f,%.2f,%.2f"%(self.mpu.acceleration)
-    inclinaisons = inclinaisons.split(',')
-    inclinaison = {
-      'X': float(inclinaisons[0])-self.fix_gyro['X'], 
-      'Y': float(inclinaisons[1])-self.fix_gyro['Y'],
-      'Z': float(inclinaisons[2])-self.fix_gyro['Z']
-      }
+    try:
+      angle_xz, angle_yz = self.get_inclination(self.mpu)
+      inclinaisons = "%.2f,%.2f,%.2f"%(self.mpu.acceleration)
+      inclinaisons = inclinaisons.split(',')
+      inclinaison = {
+        'X': float(inclinaisons[0])-self.fix_gyro['X'], 
+        'Y': float(inclinaisons[1])-self.fix_gyro['Y'],
+        'Z': float(inclinaisons[2])-self.fix_gyro['Z']
+        }
+    except:
+      return None
 
     return {'value':{'acceleration': "{:6.2f},{:6.2f}".format(angle_xz, angle_yz), 'gyroscope': inclinaison, 'temperature': "%.2f"%self.mpu.temperature}}
 

@@ -8,6 +8,7 @@ from smart4l.Service import Service
 from smart4l.Sensor import Sensor
 from smart4l.Persistence import Persistence
 from smart4l.ExportData import ExportData
+from smart4l.StaticHttpServer import StaticHttpServer
 from smart4l.utils.MeasureValue import MeasureValue
 from sensor.SensorMock import SensorMock, SensorMockJson
 from sensor.SIM7600G_H_GPS import SIM7600G_H_GPS
@@ -25,7 +26,13 @@ class Smart4L():
   def __init__(self, database_file_path) -> None:
     self.services = {}
     self.last_measure = {}
-    gyroscope = GY521_MPU6050(id='GY521_MPU6050')
+    gyroscope=None
+    try:
+      gyroscope = GY521_MPU6050(id='GY521_MPU6050')
+      self.add_service("GY521_MPU6050", Service(Sensor(gyroscope, name="GY521_MPU6050", on_measure=self.update_data), delay=1)) 
+    except:
+      pass
+
     relay_phare = RelayDemarreur('demarreur', 5)
     relay_klaxon = RelayKlaxon('klaxon', 6)
     relay_ventilateur1 = Relay('ventilateur1', 13)
@@ -43,11 +50,16 @@ class Smart4L():
     self.add_service("DS18B20_BLACK", Service(Sensor(DS18B20(id="DS18B20_BLACK", sensor_serial_id="28-01193a69213f"), name="DS18B20_BLACK", on_measure=self.update_data), delay=1))
     self.add_service("DS18B20_RED", Service(Sensor(DS18B20(id="DS18B20_RED", sensor_serial_id="28-01193a09b376"), name="DS18B20_RED", on_measure=self.update_data), delay=1))
     self.add_service("DS18B20_BLUE", Service(Sensor(DS18B20(id="DS18B20_BLUE", sensor_serial_id="28-01193a409034"), name="DS18B20_BLUE", on_measure=self.update_data), delay=1))
+    self.add_service("4lSYLVIE", Service(StaticHttpServer(), delay=1))
     #self.add_service("GY271", Service(Sensor(GY271(id='GY271'), name="GY271", on_measure=self.update_data), delay=0.2)) 
-    self.add_service("BMP280", Service(Sensor(BMP280(id='BMP280'), name="BMP280", on_measure=self.update_data), delay=3)) 
+    try:
+      self.add_service("BMP280", Service(Sensor(BMP280(id='BMP280'), name="BMP280", on_measure=self.update_data), delay=3)) 
+    except:
+      pass
     self.add_service("DHT11_25", Service(Sensor(DHT11(id='DHT11_25'), name="DHT11_25", on_measure=self.update_data), delay=1)) 
     self.add_service("SIM7600G_H_GPS", Service(Sensor(SIM7600G_H_GPS(id="SIM7600G_H_GPS"), name="SIM7600G_H_GPS", on_measure=self.update_data), delay=0.3)) 
-    self.add_service("GY521_MPU6050", Service(Sensor(gyroscope, name="GY521_MPU6050", on_measure=self.update_data), delay=1)) 
+    
+
 
 
   def start(self) -> None:

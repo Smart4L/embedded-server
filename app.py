@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+import asyncio
 import logging
 import os
 import signal
@@ -48,7 +48,7 @@ def stop():
 
 # Execute only if run as a script
 if __name__ == "__main__":
-    main()
+  main()
 else:
     logging.critical(f"{__name__} : must be run as a script\n")
 

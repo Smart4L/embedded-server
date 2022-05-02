@@ -61,8 +61,11 @@ class HTTPServer(RunnableObjectInterface):
     return jsonify([{"name":key,"measure": value} for key,value in self.measures.items()])
   
   def reset_gyro(self):
-    self.gyroscope.reset_gyro()
-    return jsonify(self.gyroscope.measure())
+    if(self.gyroscope!=None):
+      self.gyroscope.reset_gyro()
+      return jsonify(self.gyroscope.measure())
+    else:
+      return jsonify("no gyro")
   
   def relay_get(self, name):
     relay = next(relay for relay in self.relays if relay.name==name)    

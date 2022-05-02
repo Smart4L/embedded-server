@@ -29,7 +29,10 @@ class DHT11():
         return None
 
   def stop(self) -> None:
-    self.dht_device.exit()
+    try:
+      self.dht_device.exit()
+    except:
+      pass
 
   def __str__(self):
     return f'Sensor:{self.id_sensor}'

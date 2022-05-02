@@ -25,7 +25,7 @@ class RelayDemarreur():
   def on(self):
     GPIO.output(self.pin, GPIO.LOW)
     self.status = "on"
-    sleep(2)
+    sleep(1.5)
     self.off()
   
   def off(self):

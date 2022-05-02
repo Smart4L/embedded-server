@@ -29,13 +29,16 @@ class ExportData(RunnableObjectInterface):
         response = requests.request("POST", url, headers=headers, data=payload)
       logger.info(f"ExportData: send {len(self.measures)} requests")      
     except:
-      self.failed_request.append(payload)
+      self.failed_request.append(self.measures.copy())
       if(len(self.failed_request)>50):
         self.failed_request = self.failed_request[::2]
+    
     try:
-      for payload in self.failed_request:
-        response = requests.request("POST", url, headers=headers, data=payload)
-      logger.info(f"ExportData: resend {len(self.failed_request)} failed requests")
+      if len(self.failed_request)>0:
+        for sensor_id, measure in self.failed_request.items():
+          payload = json.dumps({"name":sensor_id, "date":measure['date'], "value":json.dumps(measure['value'])})
+          response = requests.request("POST", url, headers=headers, data=payload)
+        logger.info(f"ExportData: resend {len(self.measures)} failed requests")      
     except:
       pass
 
